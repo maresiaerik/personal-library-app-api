@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const models = require('../models');
 
 module.exports = {
-    getUserById(id) {
-        if (!id || !id.length) {
+    getUserById(_id) {
+        if (!_id || !id.length) {
             throw new Error('Id missing');
         }
-        return models.User.findOne({ _id: id });
+        return models.User.findOne({ _id });
     },
     getUserByEmail(email) {
         if (!email || !email.length) {

@@ -3,10 +3,32 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const services = require('../server/services');
 
-router.get('/', [auth.verifyToken], (req, res) => {
-    services.Author.getAuthors()
+router.get('/:id?', [auth.verifyToken], (req, res) => {
+    if (req.params.id) {
+        let author = {};
+        services.Author.getAuthorById(req.params.id)
+            .then(a => {
+                author = a;
+                return services.Library.getBooksByAuthor(req.params.id);
+                // return services.Author.getAuthorBooks(req.params.id)
+            })
+            .then(books => {
+                const data = {
+                    author,
+                    books,
+                };
+                res.status(200).json(data);
+            })
+            .catch(err => {
+                console.log('err: ', err );
+                res.sendStatus(500);
+            });
+    }
+    else {
+        services.Author.getAuthors()
         .then(authors => res.status(200).json(authors))
         .catch(error => res.sendStatus(500));
+    }
 });
 
 router.get('/search/:name', [auth.verifyToken], (req, res) => {

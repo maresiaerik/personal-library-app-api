@@ -3,7 +3,6 @@ const models = require('../models');
 
 module.exports = {
     getLibraryById(id) {
-        console.log('isnide');
         if (!id || !id.length) {
             throw new Error('Id missing');
         }
@@ -29,11 +28,61 @@ module.exports = {
             .populate('books authorized');
     },
     getAuthorizedLibraries(user) {
-        if (!user || !user.length) {
-            throw new Error('Id missing');
+        if (!user) {
+            throw new Error('User missing');
         }
-        const id = mongoose.Types.ObjectId(user._id);
-        return models.Library.find({ 'authorized._id':  id }).populate('books authorized');
+        const _id = mongoose.Types.ObjectId(user._id);
+        const query = {
+            $or: [
+                {
+                    owners: {
+                        $in: _id,
+                    }
+                },
+                {
+                    authorized: {
+                        $in: _id,
+                    }
+                },
+            ]
+        }
+        return models.Library.find(query).populate('owners authorized');
+    },
+    getBooksByAuthor(authorId) {
+        if (!authorId || !authorId.length) {
+            throw new Error('User missing');
+        }
+        const _id = mongoose.Types.ObjectId(authorId); 
+
+        return models.Library.find({}, 'name owners books').populate('owners books')
+            .then(lib => {
+                const data = [];
+                for (let i = 0; i < lib.length; i++) {
+                    const library = lib[i];
+                    const { books } = lib[i];
+                    for (let j = 0; j < books.length; j++) {
+                        const { authors } = books[j]
+                        for (let k = 0; k < authors.length; k ++){
+                            if (String(authors[k]) === authorId) {
+                                const { _id, name, owners: ow } = library;
+                                const owners = ow.map(({_id, username}) => [_id, username]);
+                                const payload = {
+                                    books: books[j],
+                                    library: {
+                                        _id,
+                                        name,
+                                        owners,
+                                    }
+                                }
+                                data.push(payload);
+                            }
+                        }
+                    }
+                }
+                return data;
+            })
+            .catch(err => console.log(err));
+
     },
     getBooks(body) {
         if (!body) {
@@ -45,15 +94,7 @@ module.exports = {
         if (!_id) {
             throw new Error('No Id');
         }
-        // return models.Library.find({ 'books._id': _id }).populate('books owners');
-        return models.Library.aggregate([
-            {
-                $project: {
-                    'library': '$$ROOT',
-                    'books': '$$ROOT.books'
-                }
-            }
-        ]);
+        return models.Library.find({ public: true }, '_id name books owners').populate({ path: 'books', match: { _id } }).populate('owners');
     },
     createLibrary(body) {
         if (!body) {

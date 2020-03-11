@@ -2,12 +2,6 @@ const models = require('../server/models');
 const jwt = require('jsonwebtoken');
 
 module.exports = {
-    isLibraryOwner(req, res, next) {
-        next()
-    },
-    isLibraryAuthorized(req, res, next) {
-        next()
-    },
     validateUser(req, res, next) {
         console.log(req.body);
         const { username, password } = req.body;
@@ -28,7 +22,7 @@ module.exports = {
                 }
             })
             .catch(err => {
-                res.status(500);
+                res.sendStatus(500);
             });
     },
     verifyToken(req, res, next) {
@@ -45,13 +39,19 @@ module.exports = {
                         next()
                     }
                     else {
-                        throw new Error('No user');
+                        res.status(401).json('Access Denied');
                     }
                 });
             } catch (error) {
-                res.sendStatus(400).json('Invalid Token');
+                res.status(400).json('Invalid Token');
             }
         }
 
-    }
+    },
+    isLibraryOwner(req, res, next) {
+        next()
+    },
+    isLibraryAuthorized(req, res, next) {
+        next()
+    },
 }

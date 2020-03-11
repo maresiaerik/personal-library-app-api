@@ -13,12 +13,9 @@ router.get('/:id?', [auth.isLibraryAuthorized], (req, res, next) => {
         });
 });
 router.post('/owner', [auth.verifyToken], (req, res, next) => {
-    services.Library.getOwnerLibraries(res.locals.user).then( libs => {
-        res.status(200).json(libs);
-    }).catch(err => {
-        console.log(err);
-        res.sendStatus(500);
-    });
+    services.Library.getAuthorizedLibraries(res.locals.user)
+        .then(libs => res.status(200).json(libs))
+        .catch(err => res.sendStatus(500));
 });
 
 router.post('/', (req, res, next) => {
