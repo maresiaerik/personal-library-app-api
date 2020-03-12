@@ -65,7 +65,7 @@ module.exports = {
                         for (let k = 0; k < authors.length; k ++){
                             if (String(authors[k]) === authorId) {
                                 const { _id, name, owners: ow } = library;
-                                const owners = ow.map(({_id, username}) => [_id, username]);
+                                const owners = ow.map(({_id, username}) => ({ _id, username }));
                                 const payload = {
                                     books: books[j],
                                     library: {

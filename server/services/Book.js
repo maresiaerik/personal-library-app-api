@@ -6,11 +6,11 @@ module.exports = {
         if (!_id) {
             throw new Error('Id missing');
         }
-        return models.Book.findOne( { _id } );
+        return models.Book.findOne( { _id } ).populate('authors categories categoryClasses');
         
     },
     getAllBooks() {
-        return models.Book.find({});
+        return models.Book.find({}).populate('authors categories categoryClasses');
     },
     createBook(body) {
         if (!body) {

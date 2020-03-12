@@ -22,8 +22,9 @@ router.get('/:id?', [auth.verifyToken], (req, res) => {
             .catch(err => res.sendStatus(500));
     }
     else {
-        // for now
-        res.status(200).send('No id')
+        services.Book.getAllBooks()
+            .then(books => res.status(200).json(books))
+            .catch(err => res.sendStatus(500));
     }
 });
 

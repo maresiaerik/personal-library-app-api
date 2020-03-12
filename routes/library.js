@@ -22,17 +22,14 @@ router.post('/', (req, res, next) => {
     if (!req.body) {
         res.status(500).json('No body passed');
     }
-    let { body } = req;
-    body.authorized = ['5e55aa0206b90af17afb4386', '5e55aa6606b90af17afb4387'];
-    body.owners = ['5e55aa0206b90af17afb4386'];
+    const { body } = req;
+    console.log(body);
+    // body.authorized = ['5e55aa0206b90af17afb4386', '5e55aa6606b90af17afb4387'];
+    // body.owners = ['5e55aa0206b90af17afb4386'];
 
     services.Library.createLibrary(body)
-        .then(rows => {
-            res.status(200).json(rows);
-        })
-        .catch(err => {
-            res.status(500).json(err);
-        });
+        .then(rows => res.status(200).json(rows) )
+        .catch(err => res.status(500).json(err) );
 });
 
 router.post('/book', [auth.verifyToken], (req, res) => {

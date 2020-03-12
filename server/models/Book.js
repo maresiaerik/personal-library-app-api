@@ -34,4 +34,6 @@ module.exports = new Schema({
     },
     purchaseReason: String,
     imageUrl: String,
+    pageNo: Number,
+    format: String,
 });
