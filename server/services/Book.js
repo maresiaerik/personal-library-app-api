@@ -9,6 +9,12 @@ module.exports = {
         return models.Book.findOne( { _id } ).populate('authors categories categoryClasses');
         
     },
+    getBookByName(name) {
+        if (!name || !name.length) {
+            throw new Error('Name missing');
+        }
+        return models.Book.find({ title: {$regex: name, $options: 'i'} }).populate('authors categories categoryClasses');
+    },
     getAllBooks() {
         return models.Book.find({}).populate('authors categories categoryClasses');
     },

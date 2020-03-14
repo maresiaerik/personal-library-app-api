@@ -6,7 +6,14 @@ module.exports = {
         if (!id || !id.length) {
             throw new Error('Id missing');
         }
-        return models.Library.findOne( { _id: id } ).populate('owners authorized books');
+        const bookPopulate = {
+            path: 'books',
+            populate: {
+                path: 'authors',
+                model: 'Author'
+            }
+        }
+        return models.Library.findOne( { _id: id } ).populate('owners authorized categories').populate(bookPopulate);
     },
     getLibraryByName(name) {
         if (!name || !name.length) {

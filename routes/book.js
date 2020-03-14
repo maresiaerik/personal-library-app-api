@@ -28,4 +28,18 @@ router.get('/:id?', [auth.verifyToken], (req, res) => {
     }
 });
 
+router.get('/search/:name?', [auth.verifyToken], (req, res) => {
+    if (req.params.name) {
+        services.Book.getBookByName(req.params.name)
+            .then(books => res.status(200).json(books))
+            .catch(err => res.sendStatus(500));
+    }
+    else {
+        services.Book.getAllBooks()
+            .then(books => res.status(200).json(books))
+            .catch(err => res.sendStatus(500))
+    }
+    
+});
+
 module.exports = router;
